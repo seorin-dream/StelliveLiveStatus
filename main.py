@@ -14,7 +14,7 @@ class VTuberLiveStatus:
     def __init__(self, root):
         self.root = root
         self.root.title("StelLive Live Status")
-        self.root.geometry("965x480+100+100") # 창 크기
+        self.root.geometry("960x540+100+100") # 창 크기
         self.root.resizable(True, True) # 창 조절 가능한지
 
         self.image_list = [ # 이미지 경로
@@ -57,16 +57,12 @@ class VTuberLiveStatus:
         }
         self.chzzk_url = 'https://api.chzzk.naver.com/service/v1/channels/{channelID}'
 
-        self.setup_grid()
         self.canvas_setting()
-        self.load_images_and_status()
+        self.setup_grid()
+        self.stellive_logo_head() # Stellive logo 출력
+        self.load_images_and_status() # VTuber 출력하는 부분
         self.update_status()  # 초기 상태 업데이트 호출
-
-    def setup_grid(self): # 고정 안하면 글자 ㅈㄴ 이상하게 나옴
-        self.root.grid_columnconfigure(0, minsize=80)  # 이미지 열의 고정 크기
-        self.root.grid_columnconfigure(1, minsize=80)  # 이름 열의 고정 크기
-        self.root.grid_columnconfigure(2, minsize=120)  # 상태 열의 고정 크기
-    
+ 
     def canvas_setting(self): # 전역 캔버스 설정
         self.background_color = "white" # 전역 백그라운드 색상
         self.live_text_size = 20
@@ -74,11 +70,29 @@ class VTuberLiveStatus:
         self.root.configure(background=self.background_color) # 배경 색 화이트
         # 이걸로 안됨. 밑의 글자들도 바꿔야 함.
 
+    def setup_grid(self): # 고정 안하면 글자 ㅈㄴ 이상하게 나옴
+        self.root.grid_rowconfigure(0, minsize=100)  # 스텔 로고의 크기 조정
+        self.root.grid_columnconfigure(0, minsize=80)  # 이미지 열의 고정 크기
+        self.root.grid_columnconfigure(1, minsize=80)  # 이름 열의 고정 크기
+        self.root.grid_columnconfigure(2, minsize=120)  # 상태 열의 고정 크기
+
+    def stellive_logo_head(self): # 스텔라이브 로고 출력하는 헤드 부분
+        logo_image_path = "stellive_image/logo.png"  # 로고 (280x109 size)
+        open_logo_image = Image.open(resource_path(logo_image_path))
+        # logo_image = open_logo_image.resize((200, 100))  # 로고 크기 조정
+        logo_image = ImageTk.PhotoImage(open_logo_image)
+
+        # 스텔라이브 로고 라벨
+        logo_label = Label(self.root, image=logo_image, background=self.background_color)
+        logo_label.image = logo_image
+        logo_label.grid(row=0, column=0, sticky='w')  # 첫 번째 행에 그리드 배치
+
     def load_images_and_status(self): # 이미지랑 상태 로딩하는 메인 부분
         for i, image in enumerate(self.image_list): # for 대신에 쓴다는건 아는데 뭔소린지 이해가 더 필요
             frame = Frame(self.root, background=self.background_color)
             # frame.grid(row=i, column=0, padx=5, pady=0) # 원래 쓰던 세로로 된 것
-            frame.grid(row=i // 2, column=i % 2, padx=5, pady=5)  # 그리드 배치 변경
+            frame.grid(row=((i // 2)+1), column=i % 2, padx=5, pady=0)  # 로고 때문에 그리드 배치 변경
+            # frame.grid(row=i // 2, column=i % 2, padx=5, pady=5)  # 가로 2열 그리드 배치 변경
             # 위 코드로 가로로 나눠서 출력을 함
 
             # 이미지 로드 하는 부분
