@@ -2,7 +2,7 @@ import os
 import sys
 import tkinter
 from tkinter import *
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageFont
 import requests
 
 def resource_path(relative_path): # PyInstaller 절대경로 호출용
@@ -15,7 +15,7 @@ class VTuberLiveStatus:
         self.root = root
         self.root.title("StelLive Live Status")
         self.root.geometry("960x540+100+100") # 창 크기
-        self.root.resizable(True, True) # 창 조절 가능한지
+        self.root.resizable(False, False) # 창 조절 가능한지
 
         self.image_list = [ # 이미지 경로
             "stellive_image/1_Kanna.png",
@@ -61,20 +61,29 @@ class VTuberLiveStatus:
         self.setup_grid()
         self.stellive_logo_head() # Stellive logo 출력
         self.load_images_and_status() # VTuber 출력하는 부분
+        self.refreshInfo() # 새로고침 (리프레시) 안내창
         self.update_status()  # 초기 상태 업데이트 호출
  
     def canvas_setting(self): # 전역 캔버스 설정
+        self.mod_font = ('경기천년제목 Medium')
         self.background_color = "white" # 전역 백그라운드 색상
         self.live_text_size = 20
-        self.live_text_font = 'Pretendard JP Variable'
+        self.live_text_font = self.mod_font
         self.root.configure(background=self.background_color) # 배경 색 화이트
         # 이걸로 안됨. 밑의 글자들도 바꿔야 함.
 
     def setup_grid(self): # 고정 안하면 글자 ㅈㄴ 이상하게 나옴
         self.root.grid_rowconfigure(0, minsize=100)  # 스텔 로고의 크기 조정
         self.root.grid_columnconfigure(0, minsize=80)  # 이미지 열의 고정 크기
-        self.root.grid_columnconfigure(1, minsize=80)  # 이름 열의 고정 크기
-        self.root.grid_columnconfigure(2, minsize=120)  # 상태 열의 고정 크기
+        self.root.grid_columnconfigure(1, minsize=60)  # 이름 열의 고정 크기
+        self.root.grid_columnconfigure(2, minsize=100)  # 상태 열의 고정 크기
+        self.root.grid_rowconfigure(3, minsize=50)  # 리프레시 안내창
+
+    def refreshInfo(self): # 리프레시 인포메이션 안내
+        frame = Frame(self.root, background=self.background_color)
+        frame.grid(row=0, column=1)
+        name_label = Label(frame, text="새로고침은 30초마다 이루어져요", font=(self.live_text_font, self.live_text_size), width=22, anchor="e", background=self.background_color)
+        name_label.grid(row=0, column=0, sticky='e')
 
     def stellive_logo_head(self): # 스텔라이브 로고 출력하는 헤드 부분
         logo_image_path = "stellive_image/logo.png"  # 로고 (280x109 size)
@@ -106,11 +115,11 @@ class VTuberLiveStatus:
 
             # 스텔라이브 캐릭터 이름 화면 출력
             name_label = Label(frame, text=self.stelNameList[i], font=(self.live_text_font, self.live_text_size), width=9, anchor="w", background=self.background_color)
-            name_label.grid(row=0, column=1, padx=10)
+            name_label.grid(row=0, column=1, padx=5)
 
             # 라이브 현황 화면 출력
-            status_label = Label(frame, text="", font=(self.live_text_font, self.live_text_size), width=11, anchor="w", background=self.background_color)
-            status_label.grid(row=0, column=2, padx=10)
+            status_label = Label(frame, text="", font=(self.live_text_font, self.live_text_size), width=12, anchor="w", background=self.background_color)
+            status_label.grid(row=0, column=2, padx=8)
             self.labels.append(status_label)  # Append status label to list
 
     # 라이브 정보 가져오기
