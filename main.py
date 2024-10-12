@@ -58,6 +58,7 @@ class VTuberLiveStatus:
         self.chzzk_url = 'https://api.chzzk.naver.com/service/v1/channels/{channelID}'
 
         self.setup_grid()
+        self.canvas_setting()
         self.load_images_and_status()
         self.update_status()  # 초기 상태 업데이트 호출
 
@@ -65,10 +66,17 @@ class VTuberLiveStatus:
         self.root.grid_columnconfigure(0, minsize=80)  # 이미지 열의 고정 크기
         self.root.grid_columnconfigure(1, minsize=80)  # 이름 열의 고정 크기
         self.root.grid_columnconfigure(2, minsize=120)  # 상태 열의 고정 크기
+    
+    def canvas_setting(self): # 전역 캔버스 설정
+        self.background_color = "white" # 전역 백그라운드 색상
+        self.live_text_size = 20
+        self.live_text_font = 'Pretendard JP Variable'
+        self.root.configure(background=self.background_color) # 배경 색 화이트
+        # 이걸로 안됨. 밑의 글자들도 바꿔야 함.
 
     def load_images_and_status(self): # 이미지랑 상태 로딩하는 메인 부분
         for i, image in enumerate(self.image_list): # for 대신에 쓴다는건 아는데 뭔소린지 이해가 더 필요
-            frame = Frame(self.root)
+            frame = Frame(self.root, background=self.background_color)
             # frame.grid(row=i, column=0, padx=5, pady=0) # 원래 쓰던 세로로 된 것
             frame.grid(row=i // 2, column=i % 2, padx=5, pady=5)  # 그리드 배치 변경
             # 위 코드로 가로로 나눠서 출력을 함
@@ -78,16 +86,16 @@ class VTuberLiveStatus:
             chara_image = open_image.resize((80, 80))
             chara_image = ImageTk.PhotoImage(chara_image)
 
-            chara_label = Label(frame, image=chara_image, width=80)
+            chara_label = Label(frame, image=chara_image, width=80, background=self.background_color)
             chara_label.grid(row=0, column=0, padx=5)
             chara_label.image = chara_image
 
             # 스텔라이브 캐릭터 이름 화면 출력
-            name_label = Label(frame, text=self.stelNameList[i], font=('Pretendard JP Variable', 20), width=9, anchor="w")
+            name_label = Label(frame, text=self.stelNameList[i], font=(self.live_text_font, self.live_text_size), width=9, anchor="w", background=self.background_color)
             name_label.grid(row=0, column=1, padx=10)
 
             # 라이브 현황 화면 출력
-            status_label = Label(frame, text="", font=('Pretendard JP Variable', 20), width=11, anchor="w")
+            status_label = Label(frame, text="", font=(self.live_text_font, self.live_text_size), width=11, anchor="w", background=self.background_color)
             status_label.grid(row=0, column=2, padx=10)
             self.labels.append(status_label)  # Append status label to list
 
